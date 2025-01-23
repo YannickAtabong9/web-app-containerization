@@ -40,13 +40,11 @@ jobs:
     # Build Docker images for frontend and backend
     - name: Build frontend image
       run: |
-        docker build -t my-frontend ./frontend
-        docker tag my-frontend:latest ${{ secrets.DOCKER_USERNAME }}/my-frontend:latest
+        docker build -t ${{ secrets.DOCKER_USERNAME }}/my-frontend ./frontend
 
     - name: Build backend image
       run: |
-        docker build -t my-backend ./backend
-        docker tag my-backend:latest ${{ secrets.DOCKER_USERNAME }}/my-backend:latest
+        docker build -t ${{ secrets.DOCKER_USERNAME }}/my-backend ./backend
 
     # Run Snyk vulnerability scan for frontend
     - name: Run Snyk vulnerability scan for frontend
