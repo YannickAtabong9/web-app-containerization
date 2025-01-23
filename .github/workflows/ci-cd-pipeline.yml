@@ -28,6 +28,11 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
+    # Install Snyk CLI
+    - name: Install Snyk CLI
+      run: |
+        npm install -g snyk
+
     # Build Docker images for frontend and backend
     - name: Build frontend image
       run: |
