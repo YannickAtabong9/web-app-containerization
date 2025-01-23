@@ -37,11 +37,12 @@ jobs:
       - name: Authenticate to Snyk
         run: snyk auth ${{ secrets.SNYK_TOKEN }}
 
-      # Build and Push Docker images for frontend and backend
+      # Build and push Docker images for frontend
       - name: Build and push frontend image
         run: |
           docker buildx build --platform linux/amd64 -t ${{ secrets.DOCKER_USERNAME }}/my-frontend:latest ./frontend --push
 
+      # Build and push Docker images for backend
       - name: Build and push backend image
         run: |
           docker buildx build --platform linux/amd64 -t ${{ secrets.DOCKER_USERNAME }}/my-backend:latest ./backend --push
@@ -53,4 +54,3 @@ jobs:
       # Run Snyk vulnerability scan for backend
       - name: Run Snyk vulnerability scan for backend
         run: snyk container test ${{ secrets.DOCKER_USERNAME }}/my-backend:latest
-
