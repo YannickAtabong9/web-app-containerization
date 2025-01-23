@@ -1,0 +1,40 @@
+services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "3001:3001"
+    networks:
+      - webnet
+
+  backend:
+    build: ./backend
+    ports:
+      - "5000:5000"
+    networks:
+      - webnet
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - webnet
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin  # Set a custom password
+    ports:
+      - "3002:3000"  # Expose Grafana UI on localhost:3002
+    networks:
+      - webnet
+    depends_on:
+      - prometheus  # Ensure Prometheus is running before Grafana starts
+
+networks:
+  webnet:
+    driver: bridge

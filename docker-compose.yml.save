@@ -1,0 +1,35 @@
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile  # Ensure the Dockerfile is located in the frontend directory
+    ports:
+      - "3001:3001"  # Adjust port if needed
+    networks:
+      - webnet
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile  # Ensure the Dockerfile is located in the backend directory
+    ports:
+      - "5000:5000"  # Adjust port if needed
+    networks:
+      - webnet
+
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"  # Prometheus UI access
+    networks:
+      - webnet
+
+  networks:
+  webnet:
+    driver: bridge
+
+┌──(yannick㉿Yannick)-[~/web-app-containerization]
+└─$ docker-compose up -d
+service "grafana" refers to undefined network monitoring: invalid compose proj
