@@ -53,3 +53,4 @@ jobs:
       # Run Snyk vulnerability scan for backend
       - name: Run Snyk vulnerability scan for backend
         run: snyk container test ${{ secrets.DOCKER_USERNAME }}/my-backend:latest
+
