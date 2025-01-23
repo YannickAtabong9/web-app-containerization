@@ -1,12 +1,15 @@
-name: Test Docker Build
+name: CI/CD Pipeline
 
 on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
-  test_build:
+  build_and_push:
     runs-on: ubuntu-latest
 
     steps:
@@ -25,12 +28,12 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # Build frontend image
-      - name: Build frontend image
+      # Build and push frontend image
+      - name: Build and push frontend image
         run: |
           docker buildx build --platform linux/amd64 -t ${{ secrets.DOCKER_USERNAME }}/my-frontend:latest ./frontend --push
 
-      # Build backend image
-      - name: Build backend image
+      # Build and push backend image
+      - name: Build and push backend image
         run: |
           docker buildx build --platform linux/amd64 -t ${{ secrets.DOCKER_USERNAME }}/my-backend:latest ./backend --push
