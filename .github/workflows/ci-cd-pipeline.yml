@@ -33,22 +33,42 @@ jobs:
     - name: Authenticate to Snyk
       run: snyk auth ${{ secrets.SNYK_TOKEN }}
 
-    # Run Snyk vulnerability scan for frontend (replace 'frontend_image' with actual image name)
-    - name: Run Snyk vulnerability scan for frontend
-      run: snyk container test ${{ secrets.DOCKER_USERNAME }}/frontend_image:latest
+    # Build frontend image
+    - name: Build frontend image
+      run: |
+        docker build -t ${{ secrets.DOCKER_USERNAME }}/frontend_image:latest ./frontend
 
-    # Run Snyk vulnerability scan for backend (replace 'backend_image' with actual image name)
-    - name: Run Snyk vulnerability scan for backend
-      run: snyk container test ${{ secrets.DOCKER_USERNAME }}/backend_image:latest
+    # Build backend image
+    - name: Build backend image
+      run: |
+        docker build -t ${{ secrets.DOCKER_USERNAME }}/backend_image:latest ./backend
 
-    # Push frontend image to Docker Hub (if no vulnerabilities are found)
+    # Push frontend image to Docker Hub
     - name: Push frontend image to Docker Hub
-      if: success()
       run: |
         docker push ${{ secrets.DOCKER_USERNAME }}/frontend_image:latest
 
-    # Push backend image to Docker Hub (if no vulnerabilities are found)
+    # Push backend image to Docker Hub
     - name: Push backend image to Docker Hub
-      if: success()
       run: |
         docker push ${{ secrets.DOCKER_USERNAME }}/backend_image:latest
+
+    # Run Snyk vulnerability scan for frontend
+    - name: Run Snyk vulnerability scan for frontend
+      id: snyk-frontend
+      run: snyk container test ${{ secrets.DOCKER_USERNAME }}/frontend_image:latest
+
+    # Run Snyk vulnerability scan for backend
+    - name: Run Snyk vulnerability scan for backend
+      id: snyk-backend
+      run: snyk container test ${{ secrets.DOCKER_USERNAME }}/backend_image:latest
+
+    # Fail the job if vulnerabilities are found (Frontend)
+    - name: Fail job if vulnerabilities are found (Frontend)
+      if: steps.snyk-frontend.outcome == 'failure'
+      run: exit 1
+
+    # Fail the job if vulnerabilities are found (Backend)
+    - name: Fail job if vulnerabilities are found (Backend)
+      if: steps.snyk-backend.outcome == 'failure'
+      run: exit 1
