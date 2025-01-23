@@ -28,6 +28,11 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
+    # Install Snyk CLI
+    - name: Install Snyk CLI
+      run: |
+        npm install -g snyk
+
     # Authenticate to Snyk
     - name: Authenticate to Snyk
       run: snyk auth ${{ secrets.SNYK_TOKEN }}
@@ -61,4 +66,3 @@ jobs:
       if: success()
       run: |
         docker push ${{ secrets.DOCKER_USERNAME }}/my-backend:latest
-
