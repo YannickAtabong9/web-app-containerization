@@ -33,16 +33,11 @@ jobs:
     - name: Authenticate to Snyk
       run: snyk auth ${{ secrets.SNYK_TOKEN }}
 
-    # Remove buildx plugin if it's installed
-    - name: Remove buildx plugin
+    # Ensure we're using docker build, not buildx
+    - name: Ensure using docker build (not buildx)
       run: |
-        rm -f ~/.docker/cli-plugins/docker-buildx
-
-    # Explicitly set Docker to use the default builder
-    - name: Set Docker to use default builder
-      run: |
-        docker buildx use default
-
+        docker info | grep "Buildx" || echo "Buildx is not present"
+    
     # Build frontend image using docker build (not buildx)
     - name: Build frontend image
       run: |
