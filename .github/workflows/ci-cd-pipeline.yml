@@ -50,6 +50,11 @@ jobs:
         run: |
           docker push ngowe9/frontend:latest
 
+      # Install Snyk CLI
+      - name: Install Snyk CLI
+        run: |
+          npm install -g snyk
+
       # Run Snyk to test for vulnerabilities in the backend image
       - name: Snyk Test Backend Image
         run: |
