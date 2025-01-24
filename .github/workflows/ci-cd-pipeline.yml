@@ -27,6 +27,10 @@ jobs:
       run: |
         docker build -t ngowe9/frontend:latest ./frontend
 
+    - name: Install Snyk CLI
+      run: |
+        npm install -g snyk
+
     - name: Snyk Container Security Scan - Backend
       run: |
         snyk auth ${{ secrets.SNYK_TOKEN }}
