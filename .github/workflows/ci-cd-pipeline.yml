@@ -15,7 +15,7 @@ jobs:
     steps:
       # Checkout the code
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3  # Use the latest version of checkout action
 
       # Log in to Docker Hub
       - name: Log in to Docker Hub
@@ -33,20 +33,20 @@ jobs:
       - name: Authenticate to Snyk
         run: snyk auth ${{ secrets.SNYK_TOKEN }}
 
-      # Ensure we're using docker build, not buildx
+      # Ensure we're using docker build, not buildx (Optional)
       - name: Ensure using docker build (not buildx)
         run: |
           docker info | grep "Buildx" || echo "Buildx is not present"
 
-      # Build frontend image using docker build (not buildx)
+      # Build frontend image
       - name: Build frontend image
         run: |
-          docker buildx build -t ${{ secrets.DOCKER_USERNAME }}/frontend_image:latest . 
+          docker buildx build -t ${{ secrets.DOCKER_USERNAME }}/frontend_image:latest ./frontend 
 
-      # Build backend image using docker build (not buildx)
+      # Build backend image
       - name: Build backend image
         run: |
-          docker buildx build -t ${{ secrets.DOCKER_USERNAME }}/backend_image:latest .
+          docker buildx build -t ${{ secrets.DOCKER_USERNAME }}/backend_image:latest ./backend 
 
       # Push frontend image to Docker Hub
       - name: Push frontend image to Docker Hub
