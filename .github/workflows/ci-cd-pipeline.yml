@@ -38,12 +38,17 @@ jobs:
       run: |
         rm -f ~/.docker/cli-plugins/docker-buildx
 
-    # Build frontend image
+    # Explicitly set Docker to use the default builder
+    - name: Set Docker to use default builder
+      run: |
+        docker buildx use default
+
+    # Build frontend image using docker build (not buildx)
     - name: Build frontend image
       run: |
         docker build -t ${{ secrets.DOCKER_USERNAME }}/frontend_image:latest ./frontend
 
-    # Build backend image
+    # Build backend image using docker build (not buildx)
     - name: Build backend image
       run: |
         docker build -t ${{ secrets.DOCKER_USERNAME }}/backend_image:latest ./backend
