@@ -3,10 +3,10 @@ name: Web App CI/CD Pipeline
 on:
   push:
     branches:
-      - main  # Trigger on push to the main branch
+      - main
   pull_request:
     branches:
-      - main  # Trigger on pull request targeting the main branch
+      - main
 
 jobs:
   build:
@@ -19,14 +19,6 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v1
 
-    - name: Cache Docker layers
-      uses: actions/cache@v2
-      with:
-        path: /tmp/.buildx-cache
-        key: ${{ runner.os }}-buildx-${{ github.sha }}
-        restore-keys: |
-          ${{ runner.os }}-buildx-
-
     - name: Build Backend Docker Image
       run: |
         docker build -t ngowe9/backend:latest ./backend
@@ -35,15 +27,25 @@ jobs:
       run: |
         docker build -t ngowe9/frontend:latest ./frontend
 
-    - name: Push Docker Images to Docker Hub
+    - name: Snyk Container Security Scan - Backend
       run: |
-        docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+        snyk auth ${{ secrets.SNYK_TOKEN }}
+        snyk container test ngowe9/backend:latest
+
+    - name: Snyk Container Security Scan - Frontend
+      run: |
+        snyk auth ${{ secrets.SNYK_TOKEN }}
+        snyk container test ngowe9/frontend:latest
+
+    - name: Docker login and Push Images
+      run: |
+        echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
         docker push ngowe9/backend:latest
         docker push ngowe9/frontend:latest
 
   deploy:
     runs-on: ubuntu-latest
-    needs: build  # Ensure the build job runs first
+    needs: build
 
     steps:
     - name: Checkout repository
