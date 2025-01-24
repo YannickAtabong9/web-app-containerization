@@ -33,16 +33,19 @@ jobs:
     - name: Authenticate to Snyk
       run: snyk auth ${{ secrets.SNYK_TOKEN }}
 
-    # Build frontend image (without buildx)
+    # Remove buildx plugin if it's installed
+    - name: Remove buildx plugin
+      run: |
+        rm -f ~/.docker/cli-plugins/docker-buildx
+
+    # Build frontend image
     - name: Build frontend image
       run: |
-        export DOCKER_CLI_EXPERIMENTAL=0
         docker build -t ${{ secrets.DOCKER_USERNAME }}/frontend_image:latest ./frontend
 
-    # Build backend image (without buildx)
+    # Build backend image
     - name: Build backend image
       run: |
-        export DOCKER_CLI_EXPERIMENTAL=0
         docker build -t ${{ secrets.DOCKER_USERNAME }}/backend_image:latest ./backend
 
     # Push frontend image to Docker Hub
